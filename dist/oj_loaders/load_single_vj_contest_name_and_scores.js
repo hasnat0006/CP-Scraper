@@ -165,6 +165,17 @@ async function load_single_vj_contest_name_and_scores(contest_id, contestant_ids
         const unsolved_problem_str = {};
         for (const id in unsolved_problem) {
             unsolved_problem_str[id] = unsolved_problem[id].problemIds.join(", ");
+            if (unsolved_problem_str[id] === "" && contest_scores[id].points > 0) {
+                unsolved_problem_str[id] = "";
+            }
+            else
+            {
+                unsolved_problem_str[id] = "";
+                for (let i = 0;i<length;i++)
+                {
+                    unsolved_problem_str[id] += indexToChar(i) + ", ";
+                }
+            }
         }
         
         return { contest_name, contest_scores, unsolved_problem_str };
