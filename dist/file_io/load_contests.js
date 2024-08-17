@@ -15,7 +15,7 @@ async function load_contests() {
             resolve(contest_details);
         })
             .on("error", function (error) {
-            console.log("Error loading contest data:", error.message);
+            
             reject([]);
         });
     });

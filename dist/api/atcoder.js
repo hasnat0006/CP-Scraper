@@ -15,6 +15,17 @@ async function load_atcoder_contest_details(contest_id) {
     }
     return contest[0];
 }
+async function load_atcoder_problem_details(contest_id_)
+{
+    await (delay(1000));
+    const response = await fetch('https://kenkoooo.com/atcoder/resources/problems.json');
+    const data = await response.json();
+    const contest = data.filter(({ contest_id }) => (contest_id === contest_id_));
+    if (contest === undefined)
+        return "";
+    
+    return contest;
+}
 async function load_atcoder_contest_submissions_by_user(contest_id, user_id, from_second, duration_second) {
     await (delay(1000));
     const response = await fetch(`https://kenkoooo.com/atcoder/atcoder-api/v3/user/submissions?user=${user_id}&from_second=${from_second}`);
@@ -125,4 +136,4 @@ async function load_atcoder_contest_submissions_by_user(contest_id, user_id, fro
     // });
     // });
 }
-export { load_atcoder_contest_details, load_atcoder_contest_submissions_by_user };
+export { load_atcoder_contest_details, load_atcoder_contest_submissions_by_user, load_atcoder_problem_details };

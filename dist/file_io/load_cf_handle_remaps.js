@@ -15,7 +15,7 @@ async function load_cf_handle_remaps() {
             resolve(changed_handles);
         })
             .on("error", function (error) {
-            console.log(error.message);
+            
             reject({});
         });
     });

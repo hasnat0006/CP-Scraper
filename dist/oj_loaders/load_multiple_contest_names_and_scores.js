@@ -5,6 +5,7 @@ async function load_multiple_contest_names_and_scores(contest_details, contestan
     const contest_names = {};
     const single_contest_scores = {};
     const combined_contest_scores = {};
+    const unsolved_contest_problem = {};
     contestant_ids.forEach(id => { combined_contest_scores[id] = { points: 0, penalty: 0 }; });
     const oj_score_overwrites = {};
     score_overwrites.forEach(score_overwrite => {
@@ -27,10 +28,11 @@ async function load_multiple_contest_names_and_scores(contest_details, contestan
         else {
             throw new Error("Invalid oj: " + oj);
         }
-        await load_single_contest_scores.then(({ contest_name, contest_scores }) => {
+        await load_single_contest_scores.then(({ contest_name, contest_scores, unsolved_problem_str }) => {
             const modded_contest_id = oj + "_" + contest_id;
             contest_names[modded_contest_id] = contest_name;
             contestant_ids.forEach(contestant_id => {
+                
                 if (oj_score_overwrites?.[oj]?.[contest_id]?.[contestant_id]) {
                     contest_scores[contestant_id].points = oj_score_overwrites[oj][contest_id][contestant_id].points;
                     contest_scores[contestant_id].penalty = oj_score_overwrites[oj][contest_id][contestant_id].penalty;
@@ -38,9 +40,11 @@ async function load_multiple_contest_names_and_scores(contest_details, contestan
                 combined_contest_scores[contestant_id].points += contest_scores[contestant_id].points;
                 combined_contest_scores[contestant_id].penalty += contest_scores[contestant_id].penalty;
             });
+            
+            unsolved_contest_problem[modded_contest_id] = unsolved_problem_str;
             single_contest_scores[modded_contest_id] = contest_scores;
         });
     }
-    return { contest_names, single_contest_scores, combined_contest_scores };
+    return { contest_names, single_contest_scores, combined_contest_scores, unsolved_contest_problem };
 }
 export default load_multiple_contest_names_and_scores;

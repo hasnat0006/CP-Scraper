@@ -24,7 +24,7 @@ async function load_score_overwrites() {
             resolve(score_overwrites);
         })
             .on("error", function (error) {
-            console.log(error.message);
+            
             reject([]);
         });
     });

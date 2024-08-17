@@ -2,6 +2,7 @@ import { env, loadEnv } from './env.js';
 loadEnv();
 import load_contestants from './file_io/load_contestants.js';
 const { contestant_ids, contestant_details } = await load_contestants();
+
 const contestant_scores = {};
 const contestant_effective_scores = {};
 contestant_ids.forEach(contestant_id => {
@@ -19,7 +20,8 @@ const contest_details = await load_contests();
 import load_score_overwrites from './file_io/load_score_overwrites.js';
 const score_overwrites = await load_score_overwrites();
 import load_multiple_contest_names_and_scores from './oj_loaders/load_multiple_contest_names_and_scores.js';
-const { contest_names, single_contest_scores, combined_contest_scores } = await load_multiple_contest_names_and_scores(contest_details, contestant_ids, score_overwrites, contestant_details);
+const { contest_names, single_contest_scores, combined_contest_scores, unsolved_contest_problem } = await load_multiple_contest_names_and_scores(contest_details, contestant_ids, score_overwrites, contestant_details);
+
 contestant_ids.forEach(id => {
     contestant_scores[id].points += combined_contest_scores[id].points;
     contestant_scores[id].penalty += combined_contest_scores[id].penalty;
@@ -61,11 +63,15 @@ else {
 }
 header_row.push('Score');
 header_row.push('Effective Score');
-contest_details.forEach(contest => header_row.push(contest_names[contest.oj + "_" + contest.id]));
+contest_details.forEach(contest => {
+    header_row.push(contest_names[contest.oj + "_" + contest.id])
+    header_row.push('Unsolved Problems ' + contest_names[contest.oj + "_" + contest.id]);
+});
 output_data.push(header_row);
 let current_rank = 0;
 let previous_score = { points: -1, penalty: 0 };
 contestant_ids.forEach((contestant_id, index) => {
+    
     if (compare_scores_descending(effective_scores[contestant_id], previous_score) ||
         compare_scores_descending(previous_score, effective_scores[contestant_id])) {
         current_rank++;
@@ -84,6 +90,11 @@ contestant_ids.forEach((contestant_id, index) => {
         const { oj, id: contest_id } = contest;
         const modded_contest_id = oj + "_" + contest_id;
         top_row.push("Solved = " + single_contest_scores[modded_contest_id][contestant_id].points / env.WEIGHT_SCALE);
+        if (unsolved_contest_problem[modded_contest_id] === undefined) {
+            top_row.push("Solved = 0");
+        }
+        else {
+            top_row.push(unsolved_contest_problem[modded_contest_id][contestant_id]);}
     }));
     output_data.push(top_row);
     if (env.CONTEST_TYPE === "team") {
@@ -105,11 +116,15 @@ contestant_ids.forEach((contestant_id, index) => {
                     const { oj, id: contest_id } = contest;
                     const modded_contest_id = oj + "_" + contest_id;
                     new_row.push("Penalty = " + single_contest_scores[modded_contest_id][contestant_id].penalty); // Contest score
+                    
+
                 }
                 else {
                     new_row.push(""); // Contest score
                 }
             }));
+
+
             output_data.push(new_row);
         });
     }
@@ -129,3 +144,5 @@ contestant_ids.forEach((contestant_id, index) => {
 });
 import write_data from './file_io/write_data.js';
 await write_data(output_data);
+
+

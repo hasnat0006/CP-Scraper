@@ -17,10 +17,14 @@ async function load_single_cf_contest_name_and_scores(contest_id, contestant_ids
             console.error("Missing CF handle for ", id);
     });
     const contest_scores = {};
+    const unsolved_problem = {};
     contestant_ids.forEach(id => {
         contest_scores[id] = {
             points: 0,
             penalty: 0,
+        };
+        unsolved_problem[id] = {
+            problemIds: {},
         };
     });
     const consider_score = (id, score) => {
@@ -50,8 +54,18 @@ async function load_single_cf_contest_name_and_scores(contest_id, contestant_ids
             else {
                 const contest_name = data["contest"]["name"];
                 const contest_duration = data["contest"]["durationSeconds"];
+                const length = data["problems"].length;
+                const problem_idxs = {};
+                data["problems"].forEach((problem,idx) => { 
+                    problem_idxs[idx] = problem["index"];
+                });
+                
+
                 data["rows"].forEach(row => {
                     const handle = row["party"]["members"][0]["handle"].toLowerCase();
+                    
+                    
+                    
                     if (!handle || !cf_handle_to_id[handle]) {
                         console.error("Corresponding id not found for handle:", handle);
                     }
@@ -67,7 +81,11 @@ async function load_single_cf_contest_name_and_scores(contest_id, contestant_ids
                             }
                         }
                     }
-                    row["problemResults"].forEach(({ rejectedAttemptCount, bestSubmissionTimeSeconds }) => {
+                    row["problemResults"].forEach(({ points, rejectedAttemptCount, bestSubmissionTimeSeconds }, idx) => {
+                        if (points!==0)
+                        {
+                            unsolved_problem[cf_handle_to_id[handle]].problemIds[problem_idxs[idx]] = true;
+                        }
                         if (bestSubmissionTimeSeconds &&
                             parseInt(bestSubmissionTimeSeconds) <= contest_duration) {
                             points += env.CF_PROBLEM_WEIGHT;
@@ -79,6 +97,13 @@ async function load_single_cf_contest_name_and_scores(contest_id, contestant_ids
                             }
                         }
                     });
+                    for(let i = 0; i < length; i++)
+                    {
+                        if (!unsolved_problem[cf_handle_to_id[handle]].problemIds[problem_idxs[i]])
+                        {
+                            unsolved_problem[cf_handle_to_id[handle]].problemIds[problem_idxs[i]] = false;
+                        }
+                    }
                     consider_score(cf_handle_to_id[handle], { points, penalty });
                 });
                 let min_penalty = 0;
@@ -88,7 +113,13 @@ async function load_single_cf_contest_name_and_scores(contest_id, contestant_ids
                 contestant_ids.forEach(id => {
                     contest_scores[id].penalty -= min_penalty;
                 });
-                resolve({ contest_name, contest_scores });
+                const unsolved_problem_str = {}                
+                for (const id in unsolved_problem)
+                {
+                    unsolved_problem_str[id] = Object.keys(unsolved_problem[id].problemIds).filter(key => unsolved_problem[id].problemIds[key] === false).join(",");
+                }
+                
+                resolve({ contest_name, contest_scores, unsolved_problem_str });
             }
         });
     });

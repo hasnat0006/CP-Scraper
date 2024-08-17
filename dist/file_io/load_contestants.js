@@ -60,7 +60,7 @@ async function load_contestants() {
             resolve({ contestant_ids, contestant_details });
         })
             .on("error", function (error) {
-            console.log("Error loading contestant data:", error.message);
+            
             reject({ contestant_ids: [], contestant_details: {} });
         });
     });

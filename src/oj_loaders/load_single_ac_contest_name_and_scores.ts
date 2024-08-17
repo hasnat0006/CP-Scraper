@@ -11,7 +11,7 @@ async function load_single_ac_contest_name_and_scores(
   contest_id: string,
   contestant_ids: Array<string>,
   contestant_details: { [id: string]: Contestant }
-) : Promise<{
+): Promise<{
   contest_name: string;
   contest_scores: {
     [id: string]: Score;
@@ -58,9 +58,9 @@ async function load_single_ac_contest_name_and_scores(
 
   const contest_details = await load_atcoder_contest_details(contest_id);
 
-  console.log(`Fetching results of ${contest_details["id"]}`);
+
   for (const ac_handle of ac_handles_array) {
-    console.log(`Processing handle ${ac_handle}`);
+
     const contest_submissions = await load_atcoder_contest_submissions_by_user(
       contest_details["id"],
       ac_handle,

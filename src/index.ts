@@ -7,8 +7,8 @@ import Team from './types/Team.js';
 import load_contestants from './file_io/load_contestants.js';
 const { contestant_ids, contestant_details } = await load_contestants();
 
-const contestant_scores : { [id: string]: Score } = {};
-const contestant_effective_scores : { [id: string]: Score } = {};
+const contestant_scores: { [id: string]: Score } = {};
+const contestant_effective_scores: { [id: string]: Score } = {};
 contestant_ids.forEach(contestant_id => {
   contestant_scores[contestant_id] = {
     points: 0,
@@ -40,7 +40,7 @@ contestant_ids.forEach(id => {
   contestant_effective_scores[id].penalty += effective_scores[id].penalty;
 });
 
-const compare_scores_descending = (score1 : Score, score2 : Score) => {
+const compare_scores_descending = (score1: Score, score2: Score) => {
   if (score1.points > score2.points) return true;
   else if (score1.points < score2.points) return false;
   else if (score1.penalty < score2.penalty) return true;
@@ -75,7 +75,7 @@ let previous_score = { points: -1, penalty: 0 }
 
 contestant_ids.forEach((contestant_id, index) => {
   if (compare_scores_descending(effective_scores[contestant_id], previous_score) ||
-      compare_scores_descending(previous_score, effective_scores[contestant_id])) {
+    compare_scores_descending(previous_score, effective_scores[contestant_id])) {
     current_rank++;
   }
   previous_score = effective_scores[contestant_id];
@@ -140,3 +140,4 @@ contestant_ids.forEach((contestant_id, index) => {
 
 import write_data from './file_io/write_data.js';
 await write_data(output_data);
+

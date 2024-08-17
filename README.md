@@ -26,4 +26,4 @@ Instructions:
 
     4. `dist/data/score overwrites`: allows manually overwriting the score for a particular contestant. I found it to be very handy quite often. For example, when a contestant mistakenly used their VJudge team handle in an individual VJudge contest, or when a contestant is found to have used unfair means in a particular contest.
 
-7.  Start parsing by running the command `tsc && npm run dev` in the project root directory.
+7.  Start parsing by running the command `npm run dev` in the project root directory.

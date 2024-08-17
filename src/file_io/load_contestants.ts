@@ -8,7 +8,7 @@ import parser, { Options } from 'csv-parser'
 import { createReadStream } from 'fs'
 
 async function load_contestants() {
-  const rows : Array<{ [key: string]: string }> = [];
+  const rows: Array<{ [key: string]: string }> = [];
 
   return new Promise((
     resolve: (args: {
@@ -23,14 +23,14 @@ async function load_contestants() {
     const input_data_path = join(dirname(process.argv[1]), 'data/' + env.INPUT_FILE_NAME);
     createReadStream(input_data_path)
       .pipe(parser({ delimiter: ",", from_line: 2 } as Options))
-      .on("data", function (row : { [key: string]: string }) {
+      .on("data", function (row: { [key: string]: string }) {
         rows.push(row);
       })
       .on("end", function () {
-        const contestant_ids : Array<string> = [];
-        const contestant_details : { [id: string]: Contestant } = {};
+        const contestant_ids: Array<string> = [];
+        const contestant_details: { [id: string]: Contestant } = {};
         rows.forEach(row => {
-          let contestant : Contestant = {
+          let contestant: Contestant = {
             id: '',
             name: '',
           };
@@ -77,7 +77,7 @@ async function load_contestants() {
         resolve({ contestant_ids, contestant_details });
       })
       .on("error", function (error) {
-        console.log("Error loading contestant data:", error.message);
+
         reject({ contestant_ids: [], contestant_details: {} });
       });
   })

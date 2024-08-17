@@ -71,6 +71,7 @@ async function load_single_cf_contest_name_and_scores(contest_id: string, contes
       else {
         const contest_name = data["contest"]["name"];
         const contest_duration = (data["contest"] as any)["durationSeconds"] as number;
+
         data["rows"].forEach(row => {
           const handle = row["party"]["members"][0]["handle"].toLowerCase();
           if (!handle || !cf_handle_to_id[handle]) {

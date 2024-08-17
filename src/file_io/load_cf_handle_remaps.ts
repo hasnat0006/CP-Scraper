@@ -5,11 +5,11 @@ import parser, { Options } from 'csv-parser'
 import { createReadStream } from 'fs'
 
 async function load_cf_handle_remaps() {
-  const changed_handles: {[key: string]: string} = {};
+  const changed_handles: { [key: string]: string } = {};
 
   return new Promise((
-    resolve: (args: {[key: string]: string}) => void,
-    reject: (args: {[key: string]: string}) => void
+    resolve: (args: { [key: string]: string }) => void,
+    reject: (args: { [key: string]: string }) => void
   ) => {
     const input_data_path = join(dirname(process.argv[1]), 'data/' + env.CF_HANDLE_REMAPS_FILE_NAME);
     createReadStream(input_data_path)
@@ -21,7 +21,7 @@ async function load_cf_handle_remaps() {
         resolve(changed_handles);
       })
       .on("error", function (error) {
-        console.log(error.message);
+
         reject({});
       });
   })
