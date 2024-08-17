@@ -168,7 +168,7 @@ async function load_single_vj_contest_name_and_scores(contest_id, contestant_ids
             if (unsolved_problem_str[id] === "" && contest_scores[id].points > 0) {
                 unsolved_problem_str[id] = "";
             }
-            else
+            else if(unsolved_problem_str[id] === "")
             {
                 unsolved_problem_str[id] = "";
                 for (let i = 0;i<length;i++)
