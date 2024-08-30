@@ -15,7 +15,6 @@ async function load_contests() {
             resolve(contest_details);
         })
             .on("error", function (error) {
-            
             reject([]);
         });
     });

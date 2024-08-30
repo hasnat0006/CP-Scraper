@@ -1,5 +1,5 @@
 import { env } from '../env.js';
-import { load_atcoder_contest_details, load_atcoder_contest_submissions_by_user, load_atcoder_problem_details } from '../api/atcoder.js';
+import { load_atcoder_contest_details, load_atcoder_contest_submissions_by_user } from '../api/atcoder.js';
 async function load_single_ac_contest_name_and_scores(contest_id, contestant_ids, contestant_details) {
     const ac_handles_array = [];
     const ac_handle_to_id = {};
@@ -36,28 +36,11 @@ async function load_single_ac_contest_name_and_scores(contest_id, contestant_ids
         contest_scores[id] = { points, penalty };
     };
     const contest_details = await load_atcoder_contest_details(contest_id);
-    const problem_details = await load_atcoder_problem_details(contest_id);
-    const dict = {}
-    for (const problem of problem_details) { 
-        
-        dict[problem["id"]] = problem["problem_index"];
-    }
-    
-    const flagDict = {};
-    const unsolved_problem_str = {};
-    
     for (const ac_handle of ac_handles_array) {
-        
         const contest_submissions = await load_atcoder_contest_submissions_by_user(contest_details["id"], ac_handle, contest_details["start_epoch_second"], contest_details["duration_second"]);
         const participant_status = {};
-        flagDict[ac_handle] = {};
-        for (const problem in dict) {
-            flagDict[ac_handle][dict[problem]] = false;
-        }
-        
         for (const submission of contest_submissions) {
             const { problem_id, result, epoch_second } = submission;
-            
             if (!participant_status[problem_id]) {
                 participant_status[problem_id] = {
                     solved: false,
@@ -69,7 +52,6 @@ async function load_single_ac_contest_name_and_scores(contest_id, contestant_ids
                 if (result === "AC") {
                     participant_status[problem_id].solved = true;
                     participant_status[problem_id].seconds = epoch_second - contest_details["start_epoch_second"];
-                    flagDict[ac_handle][dict[problem_id]] = true;
                 }
                 else {
                     participant_status[problem_id].penalty++;
@@ -92,19 +74,7 @@ async function load_single_ac_contest_name_and_scores(contest_id, contestant_ids
         // participant_score.penalty += max_problem_penalty_seconds;
         participant_score.penalty = Math.floor(participant_score.penalty / 60);
         consider_score(ac_handle_to_id[ac_handle], participant_score);
-        
-        unsolved_problem_str[ac_handle] = "";
-        for (const problem in flagDict[ac_handle]) {
-            if (!flagDict[ac_handle][problem]) {
-                if (!unsolved_problem_str[ac_handle_to_id[ac_handle]])
-                {
-                    unsolved_problem_str[ac_handle_to_id[ac_handle]] = "";
-                }
-                unsolved_problem_str[ac_handle_to_id[ac_handle]] += problem + ",";
-            }
-        }
     }
-    
-    return { contest_name: contest_details["title"], contest_scores, unsolved_problem_str };
+    return { contest_name: contest_details["title"], contest_scores };
 }
 export default load_single_ac_contest_name_and_scores;

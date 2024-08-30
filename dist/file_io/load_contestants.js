@@ -60,7 +60,6 @@ async function load_contestants() {
             resolve({ contestant_ids, contestant_details });
         })
             .on("error", function (error) {
-            
             reject({ contestant_ids: [], contestant_details: {} });
         });
     });
